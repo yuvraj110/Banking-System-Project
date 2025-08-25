@@ -1,4 +1,4 @@
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/777cd6fd-30e2-4681-81f6-d5d1bc64489e" /># Master README for Banking Microservices
+# Master README for Banking Microservices
 
 # Microservices Banking System
 
