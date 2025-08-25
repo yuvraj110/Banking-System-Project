@@ -1,127 +1,254 @@
-# 🏦 Banking System Project
+# Master README for Banking Microservices
 
-## 📌 Overview
+# Microservices Banking System
 
-A **Banking System** backend built with **Java Spring Boot** that demonstrates enterprise-level architecture, including **ACID transactions**, **JWT authentication**, **cloud integrations** (Blob Storage + Service Bus), and **advanced backend features** like pagination, filtering, file handling, and Excel export.
+## Overview
 
-This project is designed to showcase **real-world backend engineering skills** for interviews and portfolio building.
+This project implements a banking system using microservices architecture with Spring Boot. It includes separate services for users, accounts, transactions, notifications, API Gateway, and service discovery.
 
----
+## Microservices
 
-## ⚙️ Tech Stack
+1. **User Service** → Handles authentication, registration, roles, and email notifications.
+2. **Account Service** → Manages bank accounts and balances.
+3. **Transaction Service** → Handles deposits, withdrawals, transfers, and transaction logs.
+4. **Notification Service** → Sends email notifications for transactions and login attempts.
+5. **API Gateway** → Routes requests to the correct microservice and performs JWT authentication.
+6. **Discovery Server** → Registers all services for dynamic service discovery.
 
-* **Backend:** Java 17, Spring Boot
-* **Database:** PostgreSQL/MySQL (ACID compliance)
-* **ORM:** Hibernate/JPA
-* **Authentication:** Spring Security with JWT
-* **File Handling:** Apache POI (Excel), Multipart Upload
-* **Cloud:**
+## Technologies Used
 
-  * Blob Storage (AWS S3 / Azure Blob)
-  * Service Bus / Queue (AWS SQS / Azure Service Bus / RabbitMQ)
-* **Deployment:** AWS Free Tier (Elastic Beanstalk / EC2 + RDS + S3)
-* **Version Control:** GitHub/GitLab
+* Java 17, Spring Boot
+* Spring Security with JWT
+* Spring Data JPA, PostgreSQL
+* Spring Boot Starter Mail
+* Spring Cloud Gateway, Eureka Server
+* RabbitMQ (optional for async notifications)
+* Maven
 
----
+## Features
 
-## 🔑 Features
+* JWT-based authentication
+* Role-based access (ADMIN / USER)
+* CRUD operations for accounts and transactions
+* Transaction history retrieval
+* Email notifications on transactions and login events
+* API Gateway for centralized routing
+* Service discovery via Eureka
+* Optional async messaging via RabbitMQ
 
-* **User Management** → Registration, Login, JWT Auth, Roles (Admin, Teller, Customer).
-* **Account Management** → Create, Update, Delete, View Accounts.
-* **Transactions** → Deposit, Withdraw, Transfer (ACID guarantees).
-* **Filtering & Pagination** → On transactions and accounts.
-* **Excel Export (Apache POI)** → Download transaction history.
-* **File Upload** → KYC documents and bulk transaction Excel files.
-* **Event-driven Architecture** → Service Bus integration for async processing.
-* **Cloud Storage Integration** → Upload & retrieve files from Blob.
+## Architecture Diagram
 
----
+```
+Client → API Gateway → [User, Account, Transaction, Notification Services] → PostgreSQL
+                          ↑
+                   Eureka Discovery
+```
 
-## 📂 File Handling with Blob + Service Bus
+## Deployment
 
-1. **File Upload to Blob Storage**
+* Each microservice can be **dockerized**.
+* Services can run independently and scale horizontally.
+* API Gateway and Discovery Server must run before other services.
 
-   * Users upload files (e.g., KYC docs, transaction batches).
-   * Files are stored securely in **Blob Storage (S3/Azure Blob)**.
+## Repository Structure (if using monorepo)
 
-2. **Trigger + Service Bus**
+```
+banking-system/
+├─ user-service/
+├─ account-service/
+├─ transaction-service/
+├─ notification-service/
+├─ api-gateway/
+└─ discovery-server/
+```
 
-   * Once uploaded, a **Service Bus / Queue event** is generated.
-   * A background service listens to this event.
+* Each service has its **own README**, database, and configuration.
 
-3. **Processing**
+## Getting Started
 
-   * The background service fetches the file from **Blob**.
-   * Runs a small **validation check** (e.g., format, fields, size).
-
-4. **File Download**
-
-   * After validation, users can **download the processed file**.
-   * Ensures **asynchronous & reliable processing**.
-
----
-
-## 📊 ACID Demonstration
-
-* **Atomicity** → Transactions roll back on failure.
-* **Consistency** → Balance never goes negative unless overdraft enabled.
-* **Isolation** → Two concurrent transfers don’t interfere.
-* **Durability** → Committed data persists even after crash.
-
----
-
-## 🔗 UI Template
-
-For frontend, we’ll use a **free banking dashboard template**:
-👉 [Free Banking Dashboard UI](https://www.creative-tim.com/templates/react) (or similar React template).
+1. Clone each repository (or monorepo).
+2. Configure database settings in `application.yml`.
+3. Start Eureka Discovery Server.
+4. Start API Gateway.
+5. Start all microservices.
+6. Use Postman to test endpoints or implement a front-end UI.
 
 ---
 
-## 📌 API Endpoints (Sample)
+# Individual Service READMEs
 
-### Auth
+## 1. User Service
 
-* `POST /auth/register`
-* `POST /auth/login`
+### Description
 
-### Accounts
+Handles user registration, login, authentication, and role management (USER/ADMIN).
 
-* `POST /accounts`
-* `GET /accounts/{id}`
-* `GET /accounts?page=&size=` (pagination)
+### Technologies
 
-### Transactions
+* Java 17, Spring Boot
+* Spring Security (JWT)
+* Spring Data JPA
+* PostgreSQL
+* Spring Boot Starter Mail
+* Maven
+
+### Features
+
+* Register new users
+* Login with JWT token
+* Role-based access control (ADMIN/USER)
+* Email notifications for registration and login alerts
+
+### Endpoints
+
+* `POST /auth/register` → Register user
+* `POST /auth/login` → Login and get JWT token
+
+### Database Schema
+
+* **users**
+
+  * id: UUID
+  * username: String
+  * password: String (hashed)
+  * role: String
+  * email: String
+
+## 2. Account Service
+
+### Description
+
+Manages bank accounts and balances linked to users.
+
+### Technologies
+
+* Java 17, Spring Boot
+* Spring Data JPA
+* PostgreSQL
+* Maven
+
+### Features
+
+* Create, update, delete accounts
+* Fetch account details
+* Manage balance per user
+
+### Endpoints
+
+* `POST /accounts` → Create account
+* `GET /accounts/{id}` → Get account details
+* `PUT /accounts/{id}` → Update account
+* `DELETE /accounts/{id}` → Delete account
+
+### Database Schema
+
+* **accounts**
+
+  * id: UUID
+  * userId: UUID
+  * accountNumber: String
+  * balance: Decimal
+
+## 3. Transaction Service
+
+### Description
+
+Handles deposits, withdrawals, and transfers between accounts.
+
+### Technologies
+
+* Java 17, Spring Boot
+* Spring Data JPA
+* PostgreSQL
+* RabbitMQ (optional)
+* Maven
+
+### Features
+
+* Deposit funds
+* Withdraw funds
+* Transfer funds between accounts
+* Fetch transaction history
+* Event publishing for notifications
+
+### Endpoints
 
 * `POST /transactions/deposit`
 * `POST /transactions/withdraw`
 * `POST /transactions/transfer`
-* `GET /transactions/filter?fromDate=&toDate=&type=`
+* `GET /transactions/{accountId}` → Transaction history
 
-### File Handling
+### Database Schema
 
-* `POST /files/upload` → Upload to Blob
-* `GET /files/{id}/download` → Download from Blob after validation
+* **transactions**
 
----
+  * id: UUID
+  * accountId: UUID
+  * type: ENUM (DEPOSIT, WITHDRAW, TRANSFER)
+  * amount: Decimal
+  * timestamp: DateTime
 
-## 🚀 Deployment Plan
+## 4. Notification Service
 
-1. Local development with PostgreSQL/MySQL.
-2. Containerize (Docker).
-3. Deploy to AWS Free Tier:
+### Description
 
-   * Backend → Elastic Beanstalk / EC2
-   * Database → RDS
-   * File Storage → S3
-   * Queue → SQS
+Sends email and optional SMS notifications for account and transaction events.
 
----
+### Technologies
 
-## 🏆 Why This Project?
+* Java 17, Spring Boot
+* Spring Boot Starter Mail
+* Maven
 
-✔️ Demonstrates **real-world enterprise design**.
-✔️ Covers **backend + cloud + security**.
-✔️ Uses **ACID principles** with SQL.
-✔️ Shows **resume-ready advanced features** like event-driven design, blob storage, and file handling.
+### Features
 
----
+* Send email on successful transaction
+* Send email on failed login attempts
+* Send email after multiple failed login attempts
+* Can extend to SMS notifications
+
+### Endpoints
+
+* `POST /notifications/email`
+
+## 5. API Gateway
+
+### Description
+
+Routes all incoming requests to the appropriate microservice and handles authentication.
+
+### Technologies
+
+* Java 17, Spring Boot
+* Spring Cloud Gateway
+* Eureka Discovery Client
+* Maven
+
+### Features
+
+* Central entry point for all client requests
+* JWT validation filter
+* Route requests to respective microservices
+* Can implement rate limiting or throttling
+
+## 6. Eureka Discovery Server
+
+### Description
+
+Service registry for microservices. All services register here for discovery.
+
+### Technologies
+
+* Java 17, Spring Boot
+* Eureka Server
+* Maven
+
+### Features
+
+* Service registration and discovery
+* Helps API Gateway and other microservices locate each other
+
+### Setup
+
+* Annotate main class with `@EnableEurekaServer`
+* Configure `application.yml` with service port and Eureka settings
