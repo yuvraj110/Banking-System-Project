@@ -1,4 +1,4 @@
-# Master README for Banking Microservices
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/777cd6fd-30e2-4681-81f6-d5d1bc64489e" /># Master README for Banking Microservices
 
 # Microservices Banking System
 
@@ -142,12 +142,8 @@ Manages bank accounts and balances linked to users.
 
 ### Database Schema
 
-* **accounts**
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/477c3036-1e97-44bb-abd3-e4c4c4ca2209" />
 
-  * id: UUID
-  * userId: UUID
-  * accountNumber: String
-  * balance: Decimal
 
 ## 3. Transaction Service
 
